@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>EduVolt Editor</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<div class="app">
+
+<aside class="sidebar">
+
+<h1>EduVolt Editor</h1>
+
+
+<!-- BIBLIOTECA AUTOMÁTICA -->
+<div class="panel">
+
+<div class="panel-title">
+Biblioteca
+</div>
+
+<div class="hint small">
+Componentes cargados automáticamente desde GitHub
+</div>
+
+<div id="libraryList" class="library-list"></div>
+
+</div>
+
+
+
+<!-- PROYECTO -->
+<div class="panel">
+
+<div class="panel-title">
+Proyecto
+</div>
+
+<div class="toolbar">
+
+<button id="saveProjectBtn">
+Guardar proyecto
+</button>
+
+<button id="openProjectBtn">
+Abrir proyecto
+</button>
+
+<button id="deleteBtn">
+Eliminar
+</button>
+
+</div>
+
+<input id="projectInput" type="file" accept=".evd,.json" hidden>
+
+</div>
+
+
+
+<!-- MODOS -->
+<div class="panel">
+
+<div class="panel-title">
+Modo
+</div>
+
+<div class="toolbar">
+
+<button id="selectMode" class="active">
+Mover
+</button>
+
+<button id="wireMode">
+Conectar
+</button>
+
+<button id="editWireMode">
+Editar cable
+</button>
+
+<button id="deleteWireMode">
+Borrar cable
+</button>
+
+<button id="clearWires">
+Borrar todos
+</button>
+
+</div>
+
+</div>
+
+
+
+<!-- SIMULACIÓN -->
+<div class="panel">
+
+<div class="panel-title">
+Simulación A
+</div>
+
+<div class="toolbar">
+
+<button id="simulateBtn">
+Simular
+</button>
+
+<button id="clearSimBtn">
+Limpiar simulación
+</button>
+
+</div>
+
+<div class="hint small">
+Propaga energía desde fuentes y resalta cables energizados.
+</div>
+
+</div>
+
+
+
+<!-- CONFIGURACIÓN CABLE -->
+<div class="panel">
+
+<div class="panel-title">
+Cable
+</div>
+
+<div class="thickness-group">
+
+<label>
+<input type="radio" name="wireThickness" value="thin" checked>
+Delgado
+</label>
+
+<label>
+<input type="radio" name="wireThickness" value="thick">
+Grueso
+</label>
+
+</div>
+
+
+<div class="color-row">
+
+<label>
+Color
+<input id="wireColorPicker" type="color" value="#2563eb">
+</label>
+
+<button id="applyWireStyleBtn">
+Aplicar al cable seleccionado
+</button>
+
+</div>
+
+</div>
+
+
+
+<!-- ZOOM -->
+<div class="panel">
+
+<div class="panel-title">
+Vista
+</div>
+
+<div class="toolbar">
+
+<button id="zoomOutBtn">-</button>
+
+<button id="zoomResetBtn">
+100%
+</button>
+
+<button id="zoomInBtn">
++
+</button>
+
+</div>
+
+</div>
+
+</aside>
+
+
+
+<!-- AREA DE TRABAJO -->
+
+<main class="workspace" id="workspace">
+
+<div id="viewport">
+
+<div id="canvas"></div>
+
+<svg id="wires"></svg>
+
+</div>
+
+<div id="status" class="status">
+Modo: mover
+</div>
+
+</main>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+<script src="app.js"></script>
+
+</body>
+</html>
