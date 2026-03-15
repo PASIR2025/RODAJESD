@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EduVolt Editor</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="app">
+
+<aside class="sidebar">
+<h1>EduVolt Editor</h1>
+
+<div class="panel">
+<div class="panel-title">Biblioteca</div>
+<p class="hint small">Componentes cargados automáticamente</p>
+<div id="libraryList" class="library-list"></div>
+</div>
+
+<div class="panel">
+<div class="panel-title">Proyecto</div>
+<div class="toolbar">
+<button id="saveProjectBtn">Guardar proyecto</button>
+<button id="openProjectBtn">Abrir proyecto</button>
+<button id="deleteBtn">Eliminar</button>
+</div>
+</div>
+
+</aside>
+
+<main class="workspace" id="workspace">
+<div id="viewport">
+<div id="canvas"></div>
+<svg id="wires"></svg>
+</div>
+<div class="status" id="status">Modo: mover</div>
+</main>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+<script src="app.js"></script>
+
+</body>
+</html>
