@@ -2,7 +2,7 @@
       "relation": ["delegate_permission/common.handle_all_urls"],
       "target": {
         "namespace": "android_app",
-        "package_name": "com.escuelapasir.simuplc.twa",
+        "package_name": "com.pasir.simuplc",
         "sha256_cert_fingerprints": ["DB:85:D0:13:4B:8D:2C:50:3D:A9:D9:76:D4:05:22:50:DF:C5:BC:BC:46:FA:BD:68:8F:98:8C:81:52:02:7C:02"]
       }
     }]
