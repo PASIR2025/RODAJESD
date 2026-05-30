@@ -1,8 +1,10 @@
 [{
-      "relation": ["delegate_permission/common.handle_all_urls"],
-      "target": {
-        "namespace": "android_app",
-        "package_name": "com.pasir.simuplc",
-        "sha256_cert_fingerprints": ["25:F3:32:84:19:7C:01:87:C4:4D:63:60:35:64:CA:93:5F:1D:33:EB:80:7E:D6:61:75:0E:F3:08:51:B2:A9:9A"]
-      }
-    }]
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target": {
+    "namespace": "android_app",
+    "package_name": "com.pasir.simuplc",
+    "sha256_cert_fingerprints": [
+      "7E:EA:A6:EE:A2:14:A9:3B:A9:4E:1C:32:85:32:E8:C0:80:E7:20:7D:DD:6B:BA:16:30:B8:77:80:EF:2A:6F:68"
+    ]
+  }
+}]
