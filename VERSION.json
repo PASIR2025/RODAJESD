@@ -1,0 +1,14 @@
+{
+  "app": "SimuPLC Lab",
+  "version": "1.2.5-analog-pro-billing-ack",
+  "date": "2026-07-24",
+  "base": "SimuPLC-Fase3-Paso8-Const-Ladder-Un-Solo-Pin.zip",
+  "projectSchema": 1,
+  "fbdSchema": 4,
+  "ladderSchema": 3,
+  "cache": "simuplc-1-2-analog-pro-billing-ack-v8",
+  "buildDate": "2026-07-24",
+  "phase": 3,
+  "description": "SimuPLC 1.2 con analógicos PRO en FBD/Ladder/HMI y Google Play Billing con acknowledge y restauración de compras.",
+  "step": "analog-pro-billing-ack-v8"
+}
