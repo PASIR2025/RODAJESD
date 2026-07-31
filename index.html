@@ -3290,6 +3290,7 @@ input, textarea, select{
 <div class="component" data-type="lte" data-premium="1" draggable="true" title="Menor o igual">≤ · Menor o igual</div>
 <div class="component" data-type="hyst" data-premium="1" draggable="true" title="Histéresis">HYS · Histéresis</div>
 <div class="component" data-type="pid" data-premium="1" draggable="true" title="Controlador PID">PID · Controlador PID</div>
+<div class="component" data-type="split_range" data-premium="1" draggable="true" title="Control bidireccional / Split Range">SPLIT · Llenar / Vaciar</div>
 <div class="component" data-type="pwm_output" data-premium="1" draggable="true" title="Salida PWM">PWM · Salida PWM</div>
 <div class="component" data-type="analog_output" data-premium="1" draggable="true" title="Salida analógica">AO · Salida analógica</div>
 <div class="library-group-title">TEMPORIZADORES</div>
@@ -4035,6 +4036,7 @@ function logoLabelForType(type){
     case 'lte': return '≤';
     case 'hyst': return 'HYS';
     case 'pid': return 'PID';
+    case 'split_range': return 'SPLIT';
     case 'pwm_output': return 'PWM';
     case 'analog_output': return 'AO';
     default:     return (type||'').toUpperCase();
@@ -4254,9 +4256,9 @@ var isFull = false;
 try { isFull = localStorage.getItem('logicsoft_full_v1') === '1'; } catch(e){}
 
 // Tipos de bloque (lista completa para la paleta)
-const PALETTE_TYPES_FULL  = ['input','output','analog_constant','analog_input','pwm_output','analog_output','M','and','or','not','nand','nor','xor','xnor','scale','gt','lt','eq','gte','lte','hyst','pid','cnt','sr','ton','toff'];
+const PALETTE_TYPES_FULL  = ['input','output','analog_constant','analog_input','pwm_output','analog_output','M','and','or','not','nand','nor','xor','xnor','scale','gt','lt','eq','gte','lte','hyst','pid','split_range','cnt','sr','ton','toff'];
 // Lista de bloques PRO
-const PRO_TYPES = ['sr','ton','toff','cnt','analog_constant','analog_input','scale','gt','lt','eq','gte','lte','hyst','pid','pwm_output','analog_output'];
+const PRO_TYPES = ['sr','ton','toff','cnt','analog_constant','analog_input','scale','gt','lt','eq','gte','lte','hyst','pid','split_range','pwm_output','analog_output'];
 
 function isFullDevice(){
   try { return localStorage.getItem('logicsoft_full_v1') === '1'; }
@@ -4354,10 +4356,11 @@ function _createNodeImpl(type,x,y){
   else if(type==='pwm_output') display = nextPhysicalAnalogOutputName(type,'PWM');
   else if(type==='analog_output') display = nextPhysicalAnalogOutputName(type,'AO');
   else if(type==='pid') display = nextPhysicalAnalogOutputName(type,'PID');
+  else if(type==='split_range') display = nextPhysicalAnalogOutputName(type,'SPLIT');
 
   /* Badge B001... (no para I/Q/M/AI) */
   let blockCode=null;
-  if(type!=='input' && type!=='output' && type!=='M' && type!=='analog_constant' && type!=='analog_input' && type!=='pwm_output' && type!=='analog_output' && type!=='pid'){
+  if(type!=='input' && type!=='output' && type!=='M' && type!=='analog_constant' && type!=='analog_input' && type!=='pwm_output' && type!=='analog_output' && type!=='pid' && type!=='split_range'){
     blockCode = 'B'+zpad(++blockCodeCount);
     const badge=document.createElement('div'); badge.className='badge'; badge.textContent=blockCode; div.appendChild(badge);
   }
@@ -4377,7 +4380,17 @@ function _createNodeImpl(type,x,y){
 
   const output=document.createElement('div'); output.className='terminal output';
   if(type==='not' || type==='nand' || type==='nor'){ output.classList.add('out-round'); }
+  output.dataset.outputIndex='0';output.dataset.outputRole='OUT';
   div.appendChild(output);
+  const outputs=[output];
+  let output2=null;
+  if(type==='split_range'){
+    output.style.top='35%';output.dataset.outputRole='LLENAR';output.title='Salida LLENAR';
+    output2=document.createElement('div');output2.className='terminal output';output2.style.top='68%';output2.dataset.outputIndex='1';output2.dataset.outputRole='VACIAR';output2.title='Salida VACIAR';
+    const outFillLabel=document.createElement('div');outFillLabel.className='term-label split-output-label';outFillLabel.style.right='12px';outFillLabel.style.left='auto';outFillLabel.style.top='27%';outFillLabel.textContent='LLENAR';
+    const outDrainLabel=document.createElement('div');outDrainLabel.className='term-label split-output-label';outDrainLabel.style.right='12px';outDrainLabel.style.left='auto';outDrainLabel.style.top='60%';outDrainLabel.textContent='VACIAR';
+    div.appendChild(output2);div.appendChild(outFillLabel);div.appendChild(outDrainLabel);outputs.push(output2);
+  }
 
   const inputs=[];
   if(type==='input'){ div.style.background='#ffe4b5'; }
@@ -4389,7 +4402,7 @@ function _createNodeImpl(type,x,y){
     const lp=document.createElement('div'); lp.className='term-label'; lp.style.top='29%'; lp.textContent='PV';
     const ls=document.createElement('div'); ls.className='term-label'; ls.style.top='62%'; ls.textContent='SP';
     div.appendChild(pv);div.appendChild(lp);div.appendChild(sp);div.appendChild(ls);inputs.push(pv,sp);
-  } else if(type==='output'||type==='M' || type==='ton' || type==='toff' || type==='scale' || type==='gt' || type==='lt' || type==='eq' || type==='gte' || type==='lte' || type==='hyst' || type==='pwm_output' || type==='analog_output'){
+  } else if(type==='output'||type==='M' || type==='ton' || type==='toff' || type==='scale' || type==='split_range' || type==='gt' || type==='lt' || type==='eq' || type==='gte' || type==='lte' || type==='hyst' || type==='pwm_output' || type==='analog_output'){
     const inp=document.createElement('div'); inp.className='terminal input'; inp.style.top='50%'; div.appendChild(inp); inputs.push(inp);
   } else if(type==='not'){
     const inp=document.createElement('div'); inp.className='terminal input'; inp.style.top='50%'; div.appendChild(inp); inputs.push(inp);
@@ -4423,7 +4436,7 @@ function _createNodeImpl(type,x,y){
 
   workspace.appendChild(div);
 
-  const node={ id:nextNodeId++, el:div, type, name:display, code:blockCode, inputs, output, value:0, nextValue:0, qIndicator:qind, invalid:false };
+  const node={ id:nextNodeId++, el:div, type, name:display, code:blockCode, inputs, output, output2, outputs, value:0, nextValue:0, qIndicator:qind, invalid:false };
   if(type==='M') normalizeMemoryNode(node);
   if(type==='analog_constant'){
     node.constantValue=50; node.unit=''; node.decimals=1; node.analogValue=50; node.value=50;
@@ -4440,6 +4453,8 @@ function _createNodeImpl(type,x,y){
     node.threshold=50; node.unit=''; node.decimals=1; node.lastAnalogInput=0;
   }else if(type==='pid'){
     node.kp=2; node.ki=0.5; node.kd=0.1; node.sampleMs=100; node.outMin=0; node.outMax=100; node.mode='auto'; node.manualOutput=0; node.direction='heating'; node.unit='%'; node.decimals=1; node.pidIntegral=0; node.pidPrevError=0; node.pidLastAt=0; node.analogValue=0;
+  }else if(type==='split_range'){
+    node.inMin=0;node.inMax=100;node.neutral=50;node.deadband=2;node.outMax=100;node.unit='%';node.decimals=1;node.clamp=true;node.lastAnalogInput=50;node.splitFill=0;node.splitDrain=0;node.analogValue=50;
   }else if(type==='pwm_output'){
     node.inMin=0; node.inMax=100; node.unit='%'; node.decimals=1; node.clamp=true;
     node.frequency=1000; node.resolution=8; node.lastAnalogInput=0; node.outputPercent=0; node.analogValue=0;
@@ -4499,7 +4514,7 @@ function _createNodeImpl(type,x,y){
 
   if(type==='sr') node.q=0;
   nodes.push(node);
-  if(type==='analog_constant'||type==='analog_input'||type==='scale'||type==='gt'||type==='lt'||type==='eq'||type==='gte'||type==='lte'||type==='hyst'||type==='pid'||type==='pwm_output'||type==='analog_output'){
+  if(type==='analog_constant'||type==='analog_input'||type==='scale'||type==='gt'||type==='lt'||type==='eq'||type==='gte'||type==='lte'||type==='hyst'||type==='pid'||type==='split_range'||type==='pwm_output'||type==='analog_output'){
     const openAnalog=(e)=>{ e && e.stopPropagation && e.stopPropagation(); if(window.SimuPLCFBDAnalog) window.SimuPLCFBDAnalog.openConfig(node); };
     div.addEventListener('dblclick',openAnalog);
     let analogLastTap=0;
@@ -4508,7 +4523,8 @@ function _createNodeImpl(type,x,y){
   }
   try{ if(node.type==='input'){ if(!node.el.dataset.inputMode) node.el.dataset.inputMode='momentary-no'; if(window.attachInputModeBehavior) window.attachInputModeBehavior(node, true);} }catch(e){}
 
-  if(node.output){ node.output.style.top='50%'; node.output.style.transform='translateY(-50%)'; }
+  if(node.output && type!=='split_range'){ node.output.style.top='50%'; node.output.style.transform='translateY(-50%)'; }
+  if(type==='split_range'){outputs.forEach(function(out){out.style.transform='translateY(-50%)';});}
 
   div.addEventListener('click', e=>{ if(e.target.classList.contains('terminal')) return; if(simulation) return; selectNode(node); });
   if(type==='input'){
@@ -4649,8 +4665,12 @@ function updateGhostPath(path,sx,sy,ex,ey){
 
 /* ===== Etiquetas & hubs ===== */
 function getSourceName(conn){
-  const srcNode = nodes.find(n=>n.output===conn.from);
+  const srcNode = nodes.find(n=>(Array.isArray(n.outputs)&&n.outputs.length?n.outputs:(n.output?[n.output]:[])).includes(conn.from));
   if(!srcNode) return '??';
+  if(srcNode.type==='split_range'){
+    const outs=Array.isArray(srcNode.outputs)&&srcNode.outputs.length?srcNode.outputs:(srcNode.output?[srcNode.output]:[]);
+    return (srcNode.name||'SPLIT')+'/'+(outs.indexOf(conn.from)===1?'VACIAR':'LLENAR');
+  }
   if(srcNode.type==='input'||srcNode.type==='output'||srcNode.type==='M'||srcNode.type==='analog_constant'||srcNode.type==='analog_input'||srcNode.type==='pwm_output'||srcNode.type==='analog_output') return srcNode.name;
   return srcNode.code || 'B???';
 }
@@ -4837,7 +4857,7 @@ function convertWireToLabel(conn){
 }
 
 function getNodeByTerminal(term){
-  return nodes.find(n => n && (n.output===term || (Array.isArray(n.inputs) && n.inputs.includes(term)))) || null;
+  return nodes.find(n => n && (((Array.isArray(n.outputs)&&n.outputs.length?n.outputs:(n.output?[n.output]:[])).includes(term)) || (Array.isArray(n.inputs) && n.inputs.includes(term)))) || null;
 }
 
 /* Crear conexión normal */
@@ -4895,7 +4915,7 @@ document.addEventListener('click', (e)=>{
 
 /* ===== Señal visual ===== */
 function applySignalStyles(conn, val){
-  const srcNode = nodes.find(n=>n && n.output===conn.from);
+  const srcNode = nodes.find(n=>n && (Array.isArray(n.outputs)&&n.outputs.length?n.outputs:(n.output?[n.output]:[])).includes(conn.from));
   const analog = !!(srcNode && window.SimuPLCFBDAnalog && window.SimuPLCFBDAnalog.isAnalogSource(srcNode));
   const on = analog ? !!simulation : (val===1);
   try{
@@ -5152,7 +5172,7 @@ function onBendMoveTouch(ev){
   __scheduleBendRender(draggingBend.conn, draggingBend.index, pos);
 }
 /* Utilidades */
-function getSourceNodeValue(conn){ const n=nodes.find(nn=>nn.output===conn.from); return n? n.value:0; }
+function getSourceNodeValue(conn){ const n=nodes.find(nn=>(Array.isArray(nn.outputs)&&nn.outputs.length?nn.outputs:(nn.output?[nn.output]:[])).includes(conn.from)); if(!n)return 0; if(n.type==='split_range'){const outs=Array.isArray(n.outputs)&&n.outputs.length?n.outputs:[n.output];return outs.indexOf(conn.from)===1?(Number(n.splitDrain)||0):(Number(n.splitFill)||0);} return n.value; }
 function updateConnections(){
   if(window.SimuPLCFBDWiring) return window.SimuPLCFBDWiring.update();
   connections = connections.filter(c => c.from && c.to && document.body.contains(c.from) && document.body.contains(c.to));
@@ -5241,10 +5261,11 @@ function serialize(){
       analog: (window.SimuPLCFBDAnalog && window.SimuPLCFBDAnalog.isAnalogType(n.type)) ? window.SimuPLCFBDAnalog.paramsFor(n) : undefined
     })),
     connections: connections.map(c=>{
-      const fromNode = nodes.find(n=>n.output===c.from);
+      const fromNode = nodes.find(n=>(Array.isArray(n.outputs)?n.outputs:[n.output]).includes(c.from));
+      const fromOutputIndex = fromNode ? (Array.isArray(fromNode.outputs)?fromNode.outputs:[fromNode.output]).indexOf(c.from) : 0;
       const toNode   = nodes.find(n=>n.inputs.includes(c.to));
       const toIndex  = toNode ? toNode.inputs.indexOf(c.to) : 0;
-      return { fromId: fromNode?.id, toId: toNode?.id, toIndex, mode:c.mode||'wire' };
+      return { fromId: fromNode?.id, fromPin:'out'+(Math.max(0,fromOutputIndex)+1), toId: toNode?.id, toIndex, mode:c.mode||'wire' };
     })
   };
   return data;
@@ -5346,7 +5367,7 @@ function migrateFBDLegacyData(data){
     }
     if(typeof from === 'object' && from){ from = from.nodeId ?? from.id ?? from.node ?? from.blockId; }
     if(typeof to === 'object' && to){ to = to.nodeId ?? to.id ?? to.node ?? to.blockId; }
-    return { fromId: from, toId: to, toIndex: Number(toIndex)||0, mode:c.mode || c.type || 'wire', _legacy:c, _i:i };
+    return { fromId: from, fromPin:c.fromPin||c.sourcePin||c.outputPin||c.fromPort||'out1', toId: to, toIndex: Number(toIndex)||0, mode:c.mode || c.type || 'wire', _legacy:c, _i:i };
   }).filter(function(c){ return c.fromId != null && c.toId != null; });
   return data;
 }
@@ -5444,16 +5465,19 @@ function loadFromData(data){
   for(const c of (data.connections||[])){
     const fromNode = resolveLegacyNodeRef(c.fromId, idMap);
     const toNode   = resolveLegacyNodeRef(c.toId, idMap);
-    if(!fromNode || !toNode || !fromNode.output || !Array.isArray(toNode.inputs)) continue;
+    const sourceOutputs=fromNode?(Array.isArray(fromNode.outputs)&&fromNode.outputs.length?fromNode.outputs:[fromNode.output]):[];
+    if(!fromNode || !toNode || !sourceOutputs.length || !Array.isArray(toNode.inputs)) continue;
     let idx = Number(c.toIndex || 0);
     if(!Number.isFinite(idx) || idx < 0) idx = 0;
     if(idx >= toNode.inputs.length) idx = Math.max(0, toNode.inputs.length - 1);
+    const sourceIndex=Math.max(0,Math.min(sourceOutputs.length-1,parseInt(String(c.fromPin||'out1').replace(/\D/g,''),10)-1||0));
+    const sourcePin=sourceOutputs[sourceIndex];
     const toPin = toNode.inputs[idx];
-    const key = String(fromNode.id) + '->' + String(toNode.id) + ':' + idx;
+    const key = String(fromNode.id) + ':'+sourceIndex+'->' + String(toNode.id) + ':' + idx;
     if(seenConnections.has(key)) continue;
     seenConnections.add(key);
-    if(connections.find(x => x.from === fromNode.output && x.to === toPin)) continue;
-    createConnection(fromNode.output, toPin);
+    if(connections.find(x => x.from === sourcePin && x.to === toPin)) continue;
+    createConnection(sourcePin, toPin);
     const conn = connections[connections.length-1];
     if(conn && c.mode==='label'){ convertWireToLabel(conn); }
   }
@@ -6412,10 +6436,12 @@ document.addEventListener('DOMContentLoaded', ()=>{
 
     });
     const connSnaps = (C || []).map(c => {
-      const src = (N||[]).find(nn => nn.output === c.from);
+      const src = (N||[]).find(nn => (Array.isArray(nn.outputs)&&nn.outputs.length?nn.outputs:(nn.output?[nn.output]:[])).includes(c.from));
+      const srcOutputs = src ? (Array.isArray(src.outputs)&&src.outputs.length?src.outputs:(src.output?[src.output]:[])) : [];
+      const srcPinIdx = Math.max(0, srcOutputs.indexOf(c.from));
       const dst = (N||[]).find(nn => (nn.inputs || []).includes(c.to));
       const pinIdx = dst ? (dst.inputs.indexOf(c.to) + 1) : 1;
-      const base = { fromNodeId: src ? src.id : null, toNodeId: dst ? dst.id : null, toPin: pinIdx, mode: c.mode || 'wire',
+      const base = { fromNodeId: src ? src.id : null, fromPin:'out'+(srcPinIdx+1), toNodeId: dst ? dst.id : null, toPin: pinIdx, mode: c.mode || 'wire',
                      bends: (c.bends || []).map(b => ({ x: b.x, y: b.y })) };
       if (c.mode === 'label') {
         base.srcTag = c.srcBranch ? { tx: c.srcBranch.tx, ty: c.srcBranch.ty } : null;
@@ -6514,7 +6540,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
         if (n.el && typeof ns.y !== 'undefined') n.el.style.top = y + 'px';
 
         const labelEl = n.el?.querySelector?.('.label');
-        if (labelEl && (n.type === 'input' || n.type === 'output' || n.type === 'M' || n.type === 'analog_constant' || n.type === 'analog_input' || n.type === 'pwm_output' || n.type === 'analog_output') && n.name) {
+        if (labelEl && (n.type === 'input' || n.type === 'output' || n.type === 'M' || n.type === 'analog_constant' || n.type === 'analog_input' || n.type === 'split_range' || n.type === 'pwm_output' || n.type === 'analog_output') && n.name) {
           labelEl.textContent = n.name;
         }
 
@@ -6600,7 +6626,9 @@ document.addEventListener('DOMContentLoaded', ()=>{
 
         const rawPin = cs.toPin ?? ((typeof cs.toIndex === 'number') ? (cs.toIndex + 1) : null) ?? ((typeof cs.toPinIndex === 'number') ? (cs.toPinIndex + 1) : 1);
         const toPinIdx = Math.max(1, Math.min((dst.inputs || []).length || 1, rawPin || 1)) - 1;
-        const fromTerm = src.output, toTerm = dst.inputs?.[toPinIdx] || dst.inputs?.[0];
+        const srcOutputs = Array.isArray(src.outputs)&&src.outputs.length?src.outputs:(src.output?[src.output]:[]);
+        const srcPinIdx = Math.max(0,Math.min(srcOutputs.length-1,(parseInt(String(cs.fromPin||'out1').replace(/\D/g,''),10)||1)-1));
+        const fromTerm = srcOutputs[srcPinIdx], toTerm = dst.inputs?.[toPinIdx] || dst.inputs?.[0];
         if (!fromTerm || !toTerm || !hasFn('createConnection')) return;
 
         g.createConnection(fromTerm, toTerm);
@@ -9332,11 +9360,16 @@ function exportState(){
     };
   });
   const conDump = connections.map(c=>{
-    const fromIdx = nodes.findIndex(n=>n.output===c.from);
+    const fromIdx = nodes.findIndex(n=>(Array.isArray(n.outputs)&&n.outputs.length?n.outputs:(n.output?[n.output]:[])).includes(c.from));
+    const fromNode = fromIdx>=0?nodes[fromIdx]:null;
+    const fromOutputs = fromNode?(Array.isArray(fromNode.outputs)&&fromNode.outputs.length?fromNode.outputs:(fromNode.output?[fromNode.output]:[])):[];
+    const fromOutputIndex = Math.max(0,fromOutputs.indexOf(c.from));
     const toNodeIdx = nodes.findIndex(n=>n.inputs && n.inputs.includes(c.to));
     const toPinIdx = (toNodeIdx>=0) ? nodes[toNodeIdx].inputs.indexOf(c.to) : -1;
     return {
       fromNodeIndex: fromIdx,
+      fromOutputIndex: fromOutputIndex,
+      fromPin: 'out'+(fromOutputIndex+1),
       toNodeIndex: toNodeIdx,
       toPinIndex: toPinIdx,
       mode: c.mode || 'wire',
@@ -9408,7 +9441,9 @@ function importState(data){
       const dst = created[c.toNodeIndex];
       if(!src || !dst) return;
       const toPin = dst.inputs[c.toPinIndex] || dst.inputs[0];
-      createConnection(src.output, toPin);
+      const srcOutputs = Array.isArray(src.outputs)&&src.outputs.length?src.outputs:(src.output?[src.output]:[]);
+      const sourceIndex = Math.max(0,Math.min(srcOutputs.length-1,(typeof c.fromOutputIndex==='number'?c.fromOutputIndex:((parseInt(String(c.fromPin||'out1').replace(/\D/g,''),10)||1)-1))));
+      createConnection(srcOutputs[sourceIndex], toPin);
       const conn = connections[connections.length-1];
       conn.bends = (c.bends||[]).map(b=>({x:b.x,y:b.y}));
       renderConnection(conn);
@@ -15086,7 +15121,8 @@ body.ladder-pro-only.library-collapsed .ladder-library-open-floating{
     catch(e){ return Array.isArray(window.connections) ? window.connections : []; }
   }
 
-  function findNodeByOutput(pin, ns){ return ns.find(n => n && n.output === pin) || null; }
+  function outputTerms(n){return n?(Array.isArray(n.outputs)&&n.outputs.length?n.outputs:(n.output?[n.output]:[])):[];}
+  function findNodeByOutput(pin, ns){ return ns.find(n => outputTerms(n).includes(pin)) || null; }
   function findNodeByInput(pin, ns){ return ns.find(n => n && arr(n.inputs).includes(pin)) || null; }
 
   function stopFBD(){
@@ -15172,10 +15208,11 @@ body.ladder-pro-only.library-collapsed .ladder-library-open-floating{
         const src = findNodeByOutput(c.from, ns);
         const dst = findNodeByInput(c.to, ns);
         const toIndex = dst ? arr(dst.inputs).indexOf(c.to) : -1;
+        const sourceIndex=src?Math.max(0,outputTerms(src).indexOf(c.from)):0;
         return {
           id: c.id || ('conn_' + index),
           fromId: src ? String(src.id) : null,
-          fromPin: 'out',
+          fromPin: 'out'+(sourceIndex+1),
           toId: dst ? String(dst.id) : null,
           toPin: toIndex >= 0 ? toIndex + 1 : 1,
           mode: c.mode || 'wire',
@@ -15238,6 +15275,7 @@ body.ladder-pro-only.library-collapsed .ladder-library-open-floating{
     data.connections = data.connections.map((c,i) => ({
       id: c.id || ('conn_' + i),
       fromId: String(c.fromId ?? c.sourceId ?? c.sourceNodeId ?? c.fromNode ?? c.from ?? ''),
+      fromPin: c.fromPin || c.sourcePin || c.outputPin || 'out1',
       toId: String(c.toId ?? c.targetId ?? c.targetNodeId ?? c.toNode ?? c.to ?? ''),
       toPin: num(c.toPin ?? ((c.toIndex != null ? c.toIndex + 1 : null)) ?? c.inputPin ?? 1, 1),
       mode: c.mode || c.type || 'wire',
@@ -15365,13 +15403,15 @@ body.ladder-pro-only.library-collapsed .ladder-library-open-floating{
     data.connections.forEach(cs => {
       const src = idMap.get(String(cs.fromId));
       const dst = idMap.get(String(cs.toId));
-      if (!src || !dst || !src.output || !arr(dst.inputs).length) return;
+      const sourceOutputs=outputTerms(src);
+      if (!src || !dst || !sourceOutputs.length || !arr(dst.inputs).length) return;
 
       const pinIndex = Math.max(0, Math.min(arr(dst.inputs).length - 1, num(cs.toPin,1) - 1));
+      const sourceIndex=Math.max(0,Math.min(sourceOutputs.length-1,parseInt(String(cs.fromPin||'out1').replace(/\D/g,''),10)-1||0));
       const toTerm = dst.inputs[pinIndex];
 
       if (typeof createConnection !== 'function') return;
-      createConnection(src.output, toTerm);
+      createConnection(sourceOutputs[sourceIndex], toTerm);
       const conn = getConnections()[getConnections().length - 1];
       if (!conn) return;
 
@@ -15769,9 +15809,13 @@ body.ladder-pro-only.library-collapsed .ladder-library-open-floating{
 })();
 </script>
 
+
+<style id="simuplc-split-range-v10-style">
+.node[data-type="split_range"]{min-width:166px!important}.node[data-type="split_range"] .split-output-label{font-size:9px!important;font-weight:900!important;color:#135b88!important;width:auto!important;transform:none!important}.node[data-type="split_range"] .analog-value-display strong{font-size:14px!important}.node[data-type="split_range"] .terminal.output{right:-10px!important}
+</style>
 <script id="simuplc-analog-pro-gate-v8">
 (function(){
-  const ANALOG_TYPES=new Set(['analog_constant','analog_input','scale','gt','lt','eq','gte','lte','hyst','pid','pwm_output','analog_output']);
+  const ANALOG_TYPES=new Set(['analog_constant','analog_input','scale','gt','lt','eq','gte','lte','hyst','pid','split_range','pwm_output','analog_output']);
   function isPro(){try{return localStorage.getItem('logicsoft_full_v1')==='1'||window.isFull===true||document.body.classList.contains('full-mode');}catch(_){return window.isFull===true;}}
   function openGate(){if(typeof window.simuplcOpenPremiumOverlay==='function')window.simuplcOpenPremiumOverlay();else{document.body.classList.add('show-premium');const o=document.getElementById('lockOverlay');if(o)o.style.display='flex';}}
   function nodeType(n){return String((n&&(n.type||(n.el&&n.el.dataset&&n.el.dataset.type)))||'').trim().toLowerCase();}
@@ -16120,6 +16164,17 @@ body.ladder-pro-only.library-collapsed .ladder-library-open-floating{
 #hmiCanvas .hmi-vertical-door.fault .hmi-door-frame{border-color:#b91c1c;box-shadow:0 0 16px rgba(239,68,68,.8)}#hmiCanvas .hmi-vertical-door.fault .hmi-door-state{background:#fee2e2;color:#991b1b;border-color:#ef4444}
 #hmiCanvas .hmi-vertical-door.open .hmi-door-state{background:#dcfce7;color:#166534;border-color:#22c55e}#hmiCanvas .hmi-vertical-door.closed .hmi-door-state{background:#e2e8f0;color:#334155;border-color:#94a3b8}
 #hmiCanvas .hmi-vertical-door.moving .hmi-door-header{box-shadow:0 0 10px rgba(56,189,248,.55)}
+</style>
+<style id="hmi-motion-animation-v11-style">
+/* V11: animación visible y acelerada por GPU para cilindro horizontal y puerta vertical. */
+#hmiCanvas .hmi-cylinder-rod{transition:width .10s linear!important;will-change:width;background-attachment:local}
+#hmiCanvas .hmi-cylinder-rod-end{transition:left .10s linear!important;will-change:left}
+#hmiCanvas .hmi-cylinder.moving .hmi-cylinder-rod-end{filter:drop-shadow(0 0 5px rgba(56,189,248,.72))}
+#hmiCanvas .hmi-door-panel{transition:transform .10s linear!important;will-change:transform;backface-visibility:hidden;transform-origin:50% 0}
+#hmiCanvas .hmi-vertical-door.opening .hmi-door-panel{box-shadow:0 9px 13px rgba(14,165,233,.55)}
+#hmiCanvas .hmi-vertical-door.closing .hmi-door-panel{box-shadow:0 9px 13px rgba(245,158,11,.50)}
+#hmiCanvas .hmi-vertical-door.opening .hmi-door-state{background:#e0f2fe;color:#075985;border-color:#38bdf8}
+#hmiCanvas .hmi-vertical-door.closing .hmi-door-state{background:#fef3c7;color:#92400e;border-color:#f59e0b}
 </style>
 </body></html>
 
@@ -17975,11 +18030,12 @@ body.mode-hmi #hmiHost{top:0!important}
     // Puerta vertical: control digital por dos salidas o posición proporcional analógica.
     project.elements.filter(e=>e.type==='vertical-door').forEach(function(el){
       const previous=clamp(Number(el.position)||0,0,100);let next=previous;
+      const motionSpeed=clamp(Number(el.speed)||42,5,300);
       if(el.doorMode==='analog'){
         const command=resolveAnalogTag(el.tag,state,previous);next=clamp(Number(command)||0,0,100);
       }else{
         const opening=el.tag?resolveAnyTag(el.tag,state):false,closing=el.tag2?resolveAnyTag(el.tag2,state):false;
-        if(opening&&!closing)next=clamp(previous+el.speed*dt,0,100);else if(closing&&!opening)next=clamp(previous-el.speed*dt,0,100);
+        if(opening&&!closing)next=clamp(previous+motionSpeed*dt,0,100);else if(closing&&!opening)next=clamp(previous-motionSpeed*dt,0,100);
       }
       if(Math.abs(next-previous)>.001){el.position=next;changed=true;}
       if(el.tag3)setProcessInput(el.tag3,next>=99,false);if(el.tag4)setProcessInput(el.tag4,next<=1,false);
@@ -17987,10 +18043,12 @@ body.mode-hmi #hmiHost{top:0!important}
     // Cilindros: las salidas Q mueven el vástago y los finales de carrera regresan como I.
     project.elements.filter(e=>e.type==='cylinder'||e.type==='cylinder-v').forEach(function(el){
       const extend=el.tag?resolveAnyTag(el.tag,state):false,retract=el.tag2?resolveAnyTag(el.tag2,state):false;
-      const previous=Number(el.position)||0;let next=previous;
-      if(extend&&!retract)next=clamp(previous+el.speed*dt,0,100);else if(retract&&!extend)next=clamp(previous-el.speed*dt,0,100);
+      const previous=clamp(Number(el.position)||0,0,100);let next=previous;
+      const motionSpeed=clamp(Number(el.speed)||72,5,300);
+      if(extend&&!retract)next=clamp(previous+motionSpeed*dt,0,100);else if(retract&&!extend)next=clamp(previous-motionSpeed*dt,0,100);
       if(Math.abs(next-previous)>.001){el.position=next;changed=true;}
-      if(el.tag3)setProcessInput(el.tag3,next<=clamp(el.retractSensorPos,0,45),false);if(el.tag4)setProcessInput(el.tag4,next>=clamp(el.extendSensorPos,55,100),false);
+      const retractPoint=clamp(Number(el.retractSensorPos)||12,0,45),extendPoint=clamp(Number(el.extendSensorPos)||88,55,100);
+      if(el.tag3)setProcessInput(el.tag3,next<=retractPoint,false);if(el.tag4)setProcessInput(el.tag4,next>=extendPoint,false);
       const travel=(next-previous)/100*(el.type==='cylinder-v'?el.h*.42:el.w*.42);
       if(travel>0){const axis=cylinderAxis(el);project.elements.filter(e=>e.type==='box').forEach(function(box){if(cylinderPushesBox(el,box,previous,next)){box.x=clamp(box.x+axis.x*travel,0,CANVAS_W-box.w);box.y=clamp(box.y+axis.y*travel,24,CANVAS_H-box.h);changed=true;}});}
     });
@@ -18511,20 +18569,32 @@ body.mode-hmi #hmiHost{top:0!important}
 
   function verticalDoorRuntime(el,node,state){
     const p=clamp(Number(el.position)||0,0,100),openCmd=el.doorMode==='analog'?(p>1):resolveAnyTag(el.tag,state),closeCmd=el.doorMode==='analog'?(p<99):resolveAnyTag(el.tag2,state);
+    // La variable estaba escrita en el nodo exterior, pero el marco tenía su propia
+    // variable inline y la bloqueaba. Ahora se actualizan el marco y el panel real.
+    const frame=node.querySelector('.hmi-door-frame')||node,panel=node.querySelector('.hmi-door-panel');
+    frame.style.setProperty('--door-y',(-p)+'%');frame.style.setProperty('--door-open',p+'%');
     node.style.setProperty('--door-y',(-p)+'%');node.style.setProperty('--door-open',p+'%');
+    if(panel){panel.style.transform='translate3d(0,'+(-p)+'%,0)';panel.style.webkitTransform='translate3d(0,'+(-p)+'%,0)';}
     const percent=node.querySelector('[data-door-percent]');if(percent)percent.textContent=Math.round(p)+'%';
     const top=node.querySelector('[data-door-limit="top"]'),bottom=node.querySelector('[data-door-limit="bottom"]');if(top)top.classList.toggle('on',p>=99);if(bottom)bottom.classList.toggle('on',p<=1);
-    const fault=el.doorMode!=='analog'&&openCmd&&closeCmd;node.classList.toggle('fault',fault);node.classList.toggle('open',p>=99);node.classList.toggle('closed',p<=1);node.classList.toggle('moving',p>1&&p<99);
-    const st=node.querySelector('[data-door-state]');if(st){let txt;if(fault)txt='FALLA: SUBIR + BAJAR';else if(p>=99)txt='ABIERTA';else if(p<=1)txt='CERRADA';else if(el.doorMode==='analog')txt='APERTURA '+Math.round(p)+'%';else if(openCmd&&!closeCmd)txt='ABRIENDO '+Math.round(p)+'%';else if(closeCmd&&!openCmd)txt='CERRANDO '+Math.round(p)+'%';else txt='DETENIDA '+Math.round(p)+'%';st.textContent=txt;}
+    const fault=el.doorMode!=='analog'&&openCmd&&closeCmd,opening=!fault&&openCmd&&!closeCmd&&p<99,closing=!fault&&closeCmd&&!openCmd&&p>1;
+    node.classList.toggle('fault',fault);node.classList.toggle('open',p>=99);node.classList.toggle('closed',p<=1);node.classList.toggle('moving',opening||closing);node.classList.toggle('opening',opening);node.classList.toggle('closing',closing);
+    const st=node.querySelector('[data-door-state]');if(st){let txt;if(fault)txt='FALLA: SUBIR + BAJAR';else if(p>=99)txt='ABIERTA';else if(p<=1)txt='CERRADA';else if(el.doorMode==='analog')txt='APERTURA '+Math.round(p)+'%';else if(opening)txt='ABRIENDO '+Math.round(p)+'%';else if(closing)txt='CERRANDO '+Math.round(p)+'%';else txt='DETENIDA '+Math.round(p)+'%';st.textContent=txt;}
   }
   function cylinderRuntime(el,node,state){
-    const p=clamp(el.position,0,100),extend=el.tag?resolveAnyTag(el.tag,state):false,retract=el.tag2?resolveAnyTag(el.tag2,state):false;
+    const p=clamp(Number(el.position)||0,0,100),extend=el.tag?resolveAnyTag(el.tag,state):false,retract=el.tag2?resolveAnyTag(el.tag2,state):false;
     const rodLength=14+p*.42,headX=52+p*.42,assembly=node.querySelector('.hmi-cylinder-assembly')||node;
     assembly.style.setProperty('--cyl-progress',String(p));
     assembly.style.setProperty('--cyl-rod-length',rodLength+'%');
     assembly.style.setProperty('--cyl-head-x',headX+'%');
-    node.classList.toggle('extending',extend&&!retract);node.classList.toggle('retracting',retract&&!extend);node.classList.toggle('fault',extend&&retract);node.classList.toggle('extended',p>=98);node.classList.toggle('retracted',p<=2);
-    const st=node.querySelector('.hmi-cylinder-state');if(st)st.textContent=extend&&retract?'FALLA Q DOBLE':(p>=98?'EXTENDIDO':(p<=2?'RETRAÍDO':(extend?'EXTENDIENDO '+Math.round(p)+'%':(retract?'RETRAYENDO '+Math.round(p)+'%':'EN POSICIÓN '+Math.round(p)+'%'))));
+    // Aplicación directa además de las variables CSS: garantiza el movimiento
+    // del vástago en navegadores móviles y en la TWA de Android.
+    const rod=node.querySelector('.hmi-cylinder-rod'),head=node.querySelector('.hmi-cylinder-rod-end');
+    if(rod){rod.style.width=rodLength+'%';rod.style.willChange='width';}
+    if(head){head.style.left=headX+'%';head.style.willChange='left';}
+    const extending=extend&&!retract,retracting=retract&&!extend;
+    node.classList.toggle('extending',extending);node.classList.toggle('retracting',retracting);node.classList.toggle('fault',extend&&retract);node.classList.toggle('extended',p>=98);node.classList.toggle('retracted',p<=2);node.classList.toggle('moving',extending||retracting);
+    const st=node.querySelector('.hmi-cylinder-state');if(st)st.textContent=extend&&retract?'FALLA Q DOBLE':(p>=98?'EXTENDIDO':(p<=2?'RETRAÍDO':(extending?'EXTENDIENDO '+Math.round(p)+'%':(retracting?'RETRAYENDO '+Math.round(p)+'%':'EN POSICIÓN '+Math.round(p)+'%'))));
     const rs=node.querySelector('.hmi-cylinder-sensor.retract'),es=node.querySelector('.hmi-cylinder-sensor.extend');if(rs)rs.classList.toggle('on',resolveTag(el.tag3,state));if(es)es.classList.toggle('on',resolveTag(el.tag4,state));
   }
   function conveyorRuntime(el,node,state){const on=resolveAnyTag(el.tag,state);node.classList.toggle('on',on);node.classList.toggle('reverse',(el.direction||1)<0);const st=node.querySelector('.hmi-conveyor-state');if(st)st.textContent=on?'EN MOVIMIENTO':'DETENIDA';node.querySelectorAll('[data-conveyor-sensor]').forEach(function(sn){const tag=sn.getAttribute('data-conveyor-sensor');const src=inputSourceState(tag,state);const active=state&&state.external?src.effective:resolveTag(tag,state);sn.classList.toggle('active',!!active);sn.title=tag+' · '+(state&&state.external?src.label:(active?'HMI':'INACTIVO'));});}
