@@ -829,7 +829,7 @@
   });
 
   function loadAndroidUnoProgrammer() {
-    if (!/Android/i.test(navigator.userAgent || '')) return;
+    // Cargar también en Chrome de escritorio para permitir comprobar el dominio Android.
     if (global.SimuPLCArduinoUNO || document.querySelector('script[data-simuplc-uno-android]')) return;
     const script = document.createElement('script');
     script.src = 'assets/js/arduino-uno-programmer-v1.js?v=android-uno-release-1';
