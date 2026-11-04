@@ -3409,6 +3409,29 @@ body.mode-control #editorSelectBtn{display:none!important}
 }
 </style>
 
+<style id="simuplc-android-premium-modal-v1">
+#lockOverlayCard{width:min(94vw,440px)!important;max-width:440px!important;max-height:calc(100dvh - 24px)!important;padding:18px!important;border:1px solid #2e4264!important;border-radius:20px!important;background:#0b1427!important;overflow-y:auto!important;overscroll-behavior:contain!important;box-shadow:0 25px 70px #0009!important;text-align:left!important}
+#lockOverlayCard>div:first-child h3{font-size:clamp(1.1rem,3.5vw,1.35rem)!important;line-height:1.2!important;color:#f8fbff!important}
+.simuplc-android-pro-banner{display:flex;flex-direction:column;gap:5px;margin:14px 0 8px;padding:12px 14px;border-radius:13px;background:#182d4b;border:1px solid #345a89;color:#fff}
+.simuplc-android-pro-banner strong{font-size:.91rem}
+.simuplc-android-pro-banner span{font-size:.78rem;color:#d2e4fa;line-height:1.4}
+#lockOverlayCard .simuplc-android-pro-summary{font-size:.82rem!important;line-height:1.45!important;margin:8px 0!important;color:#d8e5f7!important}
+.simuplc-android-pro-details{margin:8px 0!important;border:1px solid #34465f;border-radius:10px;background:#0a1222}
+.simuplc-android-pro-details summary{cursor:pointer;padding:10px 12px;color:#b7dcff;font-weight:800;font-size:.81rem;list-style-position:inside}
+.simuplc-android-pro-details .pro-benefits{margin:0 8px 8px!important;padding:10px!important}
+.simuplc-android-pro-details .pro-benefits-list{gap:5px!important}
+.simuplc-android-pro-details .pro-benefits-list li{font-size:.76rem!important}
+#lockOverlayCard .simuplc-android-pro-intro{font-size:.8rem!important;margin:10px 0 8px!important;color:#dbeafe!important;text-align:center}
+.simuplc-android-pro-license-notice{margin:8px 0 12px;padding:10px 12px;background:#182a46;border:1px solid #365779;border-radius:11px;font-size:.76rem;line-height:1.4;color:#dceafa}
+#lockOverlayCard .billing-actions{display:flex!important;flex-direction:column!important;gap:9px!important;margin-top:9px!important}
+#lockOverlayCard .play-plan-btn{min-height:63px!important;padding:10px 13px!important;border-radius:13px!important;background:#172b49!important;border:1px solid #42618b!important;box-shadow:none!important;display:flex!important;align-items:center!important;justify-content:space-between!important;gap:10px!important}
+#lockOverlayCard .play-plan-btn.simuplc-android-featured{background:linear-gradient(110deg,#174c91,#1864b4)!important;border-color:#67b5ff!important}
+#lockOverlayCard .play-plan-btn>span{font-size:.9rem!important;font-weight:850!important;color:#fff!important}
+#lockOverlayCard .play-plan-btn>span em{display:block;margin-top:3px;font-size:.68rem;font-style:normal;color:#b5e9ff}
+#lockOverlayCard .play-plan-btn>small{font-size:.85rem!important;font-weight:800!important;color:#fff!important;text-align:right!important;max-width:50%!important}
+#lockOverlayCard .btn-have-license{min-height:40px!important;border-radius:11px!important}
+@media(max-width:420px){#lockOverlayCard{padding:13px!important}#lockOverlayCard .play-plan-btn{padding:9px!important}#lockOverlayCard .play-plan-btn>span{font-size:.82rem!important}#lockOverlayCard .play-plan-btn>small{font-size:.77rem!important}}
+</style>
 </head>
 <body>
 <div id="simuplcBootScreen" aria-label="Cargando SimuPLC">
@@ -3485,6 +3508,9 @@ body.mode-control #editorSelectBtn{display:none!important}
       <h3 style="margin:0">🔓 Desbloquea SimuPLC PRO</h3>
       <button id="lockClose" aria-label="Cerrar" style="border:none;background:transparent;color:#cbd5f5;font-size:18px;font-weight:900;cursor:pointer;line-height:1">✕</button>
     </div>
+    <div class="simuplc-android-pro-banner"><strong>📱 SimuPLC PRO para Android</strong><span>Funciones avanzadas · Compra segura mediante Google Play</span></div>
+    <p class="simuplc-android-pro-summary">Ladder, FBD, HMI avanzado, temporizadores, exportación PDF y mucho más.</p>
+    <details class="simuplc-android-pro-details"><summary>✓ Ver todas las funciones PRO</summary>
     <div class="pro-benefits" aria-label="Beneficios de SimuPLC PRO">
       <ul class="pro-benefits-list">
         <li>Entradas y salidas analógicas</li>
@@ -3500,16 +3526,18 @@ body.mode-control #editorSelectBtn{display:none!important}
         <li><strong>Nuevas funciones y actualizaciones PRO incluidas</strong></li>
       </ul>
     </div>
-    <p>Elige tu plan PRO en Google Play o activa tu licencia si ya cuentas con una.</p>
+    </details>
+    <p class="simuplc-android-pro-intro">Elige tu plan PRO. Google Play mostrará el precio y las condiciones antes de confirmar.</p>
+    <div class="simuplc-android-pro-license-notice"><strong>Importante:</strong> la licencia adquirida mediante Google Play es válida únicamente para Android. No incluye la versión para PC o laptop.</div>
     <div class="billing-actions">
-      <button id="btnGooglePlayMonthly" class="btn-lock btn-google-play play-plan-btn" type="button" data-play-product="simuplc_pro_monthly">
-        <span>PRO Mensual</span><small id="priceGooglePlayMonthly">Consultando precio…</small>
+      <button id="btnGooglePlayBuy" class="btn-lock btn-google-play play-plan-btn simuplc-android-featured" type="button" data-play-product="simuplc_pro_lifetime">
+        <span>⭐ PRO de por vida <em>Recomendado</em></span><small id="priceGooglePlayLifetime">Consultando precio…</small>
       </button>
       <button id="btnGooglePlayAnnual" class="btn-lock btn-google-play play-plan-btn" type="button" data-play-product="simuplc_pro_annual">
-        <span>PRO Anual</span><small id="priceGooglePlayAnnual">Consultando precio…</small>
+        <span>PRO anual</span><small id="priceGooglePlayAnnual">Consultando precio…</small>
       </button>
-      <button id="btnGooglePlayBuy" class="btn-lock btn-google-play play-plan-btn" type="button" data-play-product="simuplc_pro_lifetime">
-        <span>PRO de por vida</span><small id="priceGooglePlayLifetime">Consultando precio…</small>
+      <button id="btnGooglePlayMonthly" class="btn-lock btn-google-play play-plan-btn" type="button" data-play-product="simuplc_pro_monthly">
+        <span>PRO mensual</span><small id="priceGooglePlayMonthly">Consultando precio…</small>
       </button>
       <button id="btnGooglePlayRestore" class="btn-lock btn-have-license" type="button">Restaurar compras de Google Play</button>
       <button id="btnHaveLicense" class="btn-lock btn-have-license" type="button">Ya tengo licencia</button>
