@@ -93,10 +93,10 @@
   }
 
   function generatedControlMode() {
-    try {
-      const mode = String(localStorage.getItem('simuplc_global_control_mode_v21') || 'both').toLowerCase();
-      return mode === 'hmi' ? 1 : mode === 'physical' ? 2 : 0;
-    } catch (_) { return 0; }
+    // El firmware recién grabado debe funcionar con pulsadores físicos sin HMI.
+    // El HMI puede cambiar el modo después de conectarse mediante el comando MODE.
+    // No heredar al Arduino el último modo HMI guardado en este navegador.
+    return 0; // SIMUPLC_BOTH: físico y HMI.
   }
 
   function likelyNcInput(label, source) {
