@@ -588,6 +588,8 @@
     lines.push('char simuplcRxLine[128];');
     lines.push('uint8_t simuplcRxLength = 0;');
     lines.push('uint32_t simuplcLastStateAt = 0;');
+    lines.push('uint32_t simuplcLastHmiCommandAt = 0;');
+    lines.push('const uint32_t SIMUPLC_HMI_TIMEOUT_MS = 6000UL;');
     lines.push('');
     lines.push('float clampFloat(float value,float a,float b){ float lo=min(a,b),hi=max(a,b); return max(lo,min(hi,value)); }');
     lines.push('bool invalidFloat(float value){ return value != value; }');
@@ -725,7 +727,7 @@
     lines.push('}');
     lines.push('void processSimuPLCCommand(char* line){');
     lines.push("  for(char* p=line;*p;p++)if(*p>='a'&&*p<='z')*p=(char)(*p-32);");
-    lines.push('  char* save=nullptr;char* cmd=strtok_r(line,",",&save);if(!cmd)return;simuplcProtocolActive=true;');
+    lines.push('  char* save=nullptr;char* cmd=strtok_r(line,",",&save);if(!cmd)return;simuplcProtocolActive=true;simuplcLastHmiCommandAt=millis();');
     lines.push('  if(strcmp(cmd,"HELLO")==0){Serial.println(F("OK,SIMUPLC,READY_ANALOG_V1,1"));simuplcScanRequested=true;simuplcStateRequested=true;return;}');
     lines.push('  if(strcmp(cmd,"PING")==0){Serial.println(F("PONG"));return;}');
     lines.push('  if(strcmp(cmd,"GET_STATE")==0){simuplcScanRequested=true;simuplcStateRequested=true;return;}');
@@ -749,6 +751,12 @@
     lines.push('');
     lines.push('void loop(){');
     lines.push('  pollSimuPLCSerial();');
+    lines.push('  if(simuplcProtocolActive&&(uint32_t)(millis()-simuplcLastHmiCommandAt)>SIMUPLC_HMI_TIMEOUT_MS){');
+    lines.push('    simuplcProtocolActive=false;simuplcControlMode=SIMUPLC_PHYSICAL;simuplcRunning=true;');
+    lines.push('    for(uint8_t i=0;i<N_DIGITAL_INPUTS;i++)hmiDigitalInputs[i]=false;');
+    lines.push('    for(uint8_t i=0;i<N_ANALOG_INPUTS;i++)hmiAnalogValid[i]=false;');
+    lines.push('    simuplcScanRequested=true;simuplcStateRequested=false;');
+    lines.push('  }');
     lines.push('  uint32_t now=millis();if(simuplcScanRequested||(uint32_t)(now-lastScan)>=SCAN_MS){simuplcScanRequested=false;lastScan=now;controllerScan(now);}');
     lines.push('  if(simuplcProtocolActive&&(simuplcStateRequested||(uint32_t)(now-simuplcLastStateAt)>=SIMUPLC_STATE_PERIOD_MS))sendSimuPLCState();');
     lines.push('}');
@@ -1034,6 +1042,8 @@
     lines.push('char simuplcRxLine[128];');
     lines.push('uint8_t simuplcRxLength = 0;');
     lines.push('uint32_t simuplcLastStateAt = 0;');
+    lines.push('uint32_t simuplcLastHmiCommandAt = 0;');
+    lines.push('const uint32_t SIMUPLC_HMI_TIMEOUT_MS = 6000UL;');
     lines.push('');
     lines.push('float clampFloat(float value,float a,float b){float lo=min(a,b),hi=max(a,b);return max(lo,min(hi,value));}');
     lines.push('float mapFloat(float value,float inMin,float inMax,float outMin,float outMax,bool limit){if(inMax==inMin)return outMin;if(limit)value=clampFloat(value,inMin,inMax);return outMin+((value-inMin)/(inMax-inMin))*(outMax-outMin);}');
@@ -1161,7 +1171,7 @@
     lines.push('}');
     lines.push('void processSimuPLCCommand(char* line){');
     lines.push("  for(char* p=line;*p;p++)if(*p>='a'&&*p<='z')*p=(char)(*p-32);");
-    lines.push('  char* save=nullptr;char* cmd=strtok_r(line,",",&save);if(!cmd)return;simuplcProtocolActive=true;');
+    lines.push('  char* save=nullptr;char* cmd=strtok_r(line,",",&save);if(!cmd)return;simuplcProtocolActive=true;simuplcLastHmiCommandAt=millis();');
     lines.push('  if(strcmp(cmd,"HELLO")==0){Serial.println(F("OK,SIMUPLC,READY_ANALOG_V1,1"));simuplcScanRequested=true;simuplcStateRequested=true;return;}');
     lines.push('  if(strcmp(cmd,"PING")==0){Serial.println(F("PONG"));return;}');
     lines.push('  if(strcmp(cmd,"GET_STATE")==0){simuplcScanRequested=true;simuplcStateRequested=true;return;}');
@@ -1176,6 +1186,12 @@
     lines.push('');
     lines.push('void loop(){');
     lines.push('  pollSimuPLCSerial();');
+    lines.push('  if(simuplcProtocolActive&&(uint32_t)(millis()-simuplcLastHmiCommandAt)>SIMUPLC_HMI_TIMEOUT_MS){');
+    lines.push('    simuplcProtocolActive=false;simuplcControlMode=SIMUPLC_PHYSICAL;simuplcRunning=true;');
+    lines.push('    for(uint8_t i=0;i<N_DIGITAL_INPUTS;i++)hmiDigitalInputs[i]=false;');
+    lines.push('    for(uint8_t i=0;i<N_ANALOG_INPUTS;i++)hmiAnalogValid[i]=false;');
+    lines.push('    simuplcScanRequested=true;simuplcStateRequested=false;');
+    lines.push('  }');
     lines.push('  uint32_t now=millis();if(simuplcScanRequested||(uint32_t)(now-lastScan)>=20){simuplcScanRequested=false;lastScan=now;controllerScan(now);}');
     lines.push('  if(simuplcProtocolActive&&(simuplcStateRequested||(uint32_t)(now-simuplcLastStateAt)>=SIMUPLC_STATE_PERIOD_MS))sendSimuPLCState();');
     lines.push('}');
