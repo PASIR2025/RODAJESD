@@ -3449,6 +3449,18 @@ body.mode-control #editorSelectBtn{display:none!important}
 #simuplcProFeaturesDialog .simuplc-features-footer{font-size:.78rem;color:#a9c6e8;text-align:center;margin:15px 0 0}
 @media(max-width:600px){#simuplcProFeaturesDialog{padding:15px}#simuplcProFeaturesDialog .simuplc-features-grid{grid-template-columns:1fr;gap:9px}#simuplcProFeaturesDialog .simuplc-feature-section{padding:12px}}
 </style>
+<style id="simuplc-play-pro-modal-compact-v3">
+#lockOverlayCard{padding:15px!important}
+#lockOverlayCard .simuplc-android-pro-banner{margin:11px 0 12px;padding:11px 13px}
+#lockOverlayCard .simuplc-features-open{margin:0 0 13px!important;min-height:51px!important;background:linear-gradient(105deg,#1761a8,#267fd1)!important;border:1px solid #88caff!important;box-shadow:0 3px 12px #1b68af44!important;color:#fff!important;gap:8px!important}
+#lockOverlayCard .simuplc-features-open>span:last-child{font-size:.72rem;font-weight:750;white-space:nowrap;color:#e2f4ff}
+#lockOverlayCard .billing-actions{gap:8px!important;margin-top:0!important}
+#lockOverlayCard .play-plan-btn{box-sizing:border-box;display:grid!important;grid-template-columns:minmax(0,1fr) auto!important;align-items:center!important;justify-content:initial!important;gap:8px!important;min-height:61px!important;padding:11px 13px!important;text-align:left!important}
+#lockOverlayCard .play-plan-btn>span{min-width:0!important;line-height:1.2!important}
+#lockOverlayCard .play-plan-btn>span em{margin-top:4px!important}
+#lockOverlayCard .play-plan-btn>small{display:block!important;min-width:0!important;max-width:none!important;text-align:right!important;white-space:nowrap!important;overflow:visible!important;line-height:1.2!important;font-size:clamp(.65rem,2.5vw,.85rem)!important}
+@media(max-width:420px){#lockOverlayCard .play-plan-btn{padding:10px!important;gap:5px!important}#lockOverlayCard .play-plan-btn>span{font-size:.78rem!important}#lockOverlayCard .play-plan-btn>small{font-size:clamp(.6rem,2.5vw,.76rem)!important}#lockOverlayCard .simuplc-features-open{padding:10px!important;font-size:.79rem!important}#lockOverlayCard .simuplc-features-open>span:last-child{font-size:.64rem!important}}
+</style>
 </head>
 <body>
 <div id="simuplcBootScreen" aria-label="Cargando SimuPLC">
@@ -3525,11 +3537,8 @@ body.mode-control #editorSelectBtn{display:none!important}
       <h3 style="margin:0">🔓 Desbloquea SimuPLC PRO</h3>
       <button id="lockClose" aria-label="Cerrar" style="border:none;background:transparent;color:#cbd5f5;font-size:18px;font-weight:900;cursor:pointer;line-height:1">✕</button>
     </div>
-    <div class="simuplc-android-pro-banner"><strong>📱 SimuPLC PRO para Android</strong><span>Funciones avanzadas · Compra segura mediante Google Play</span></div>
-    <p class="simuplc-android-pro-summary">Ladder, FBD, HMI avanzado, temporizadores, exportación PDF y mucho más.</p>
-    <button id="simuplcFeaturesOpen" class="simuplc-features-open" type="button" aria-haspopup="dialog">✦ Ver todas las funciones PRO <span aria-hidden="true">›</span></button>
-    <p class="simuplc-android-pro-intro">Elige tu plan PRO. Google Play mostrará el precio y las condiciones antes de confirmar.</p>
-    <div class="simuplc-android-pro-license-notice"><strong>Importante:</strong> la licencia adquirida mediante Google Play es válida únicamente para Android. No incluye la versión para PC o laptop.</div>
+    <div class="simuplc-android-pro-banner"><strong>📱 SimuPLC PRO para Android</strong><span>Licencia exclusiva para Android · Compra segura mediante Google Play</span></div>
+    <button id="simuplcFeaturesOpen" class="simuplc-features-open" type="button" aria-haspopup="dialog"><span>📋 Ver todas las funciones PRO</span><span aria-hidden="true">Ver detalles ›</span></button>
     <div class="billing-actions">
       <button id="btnGooglePlayBuy" class="btn-lock btn-google-play play-plan-btn simuplc-android-featured" type="button" data-play-product="simuplc_pro_lifetime">
         <span>⭐ PRO de por vida <em>Recomendado</em></span><small id="priceGooglePlayLifetime">Consultando precio…</small>
