@@ -3432,6 +3432,23 @@ body.mode-control #editorSelectBtn{display:none!important}
 #lockOverlayCard .btn-have-license{min-height:40px!important;border-radius:11px!important}
 @media(max-width:420px){#lockOverlayCard{padding:13px!important}#lockOverlayCard .play-plan-btn{padding:9px!important}#lockOverlayCard .play-plan-btn>span{font-size:.82rem!important}#lockOverlayCard .play-plan-btn>small{font-size:.77rem!important}}
 </style>
+<style id="simuplc-play-pro-features-v2">
+#lockOverlayCard .simuplc-features-open{display:flex;align-items:center;justify-content:space-between;width:100%;margin:10px 0;padding:12px 14px;border:1px solid #5285c1;border-radius:12px;background:#17385e;color:#f3f9ff;font-weight:850;font-size:.88rem;cursor:pointer;text-align:left}
+#lockOverlayCard .simuplc-features-open:focus-visible,#simuplcProFeaturesDialog button:focus-visible{outline:3px solid #91cbff;outline-offset:2px}
+#simuplcProFeaturesDialog{box-sizing:border-box;width:min(94vw,650px);max-height:85dvh;overflow-y:auto;border:1px solid #4e8cd5;border-radius:18px;padding:20px;background:#0b1a34;color:#f2f7ff;box-shadow:0 30px 80px #000b}
+#simuplcProFeaturesDialog::backdrop{background:#020817bb}
+#simuplcProFeaturesDialog h3{font-size:1.25rem;margin:0 0 7px;padding-right:75px;line-height:1.3}
+#simuplcProFeaturesDialog .simuplc-features-subtitle{color:#c5dcfa;font-size:.9rem;line-height:1.5;margin:0 0 15px}
+#simuplcProFeaturesDialog .simuplc-features-close{float:right;border:1px solid #6784a7;background:#172e50;color:#fff;border-radius:8px;padding:7px 11px;cursor:pointer}
+#simuplcProFeaturesDialog .simuplc-features-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+#simuplcProFeaturesDialog .simuplc-feature-section{padding:14px;background:#172e50;border:1px solid #3d6594;border-radius:13px}
+#simuplcProFeaturesDialog .simuplc-feature-section h4{color:#fff;font-size:1rem;margin:0 0 10px}
+#simuplcProFeaturesDialog .simuplc-feature-section ul{list-style:none;padding:0;margin:0;display:grid;gap:9px}
+#simuplcProFeaturesDialog .simuplc-feature-section li{position:relative;padding-left:21px;color:#e3edfc;font-size:.85rem;line-height:1.45}
+#simuplcProFeaturesDialog .simuplc-feature-section li::before{content:"✓";position:absolute;left:0;top:0;color:#67e6af;font-weight:900}
+#simuplcProFeaturesDialog .simuplc-features-footer{font-size:.78rem;color:#a9c6e8;text-align:center;margin:15px 0 0}
+@media(max-width:600px){#simuplcProFeaturesDialog{padding:15px}#simuplcProFeaturesDialog .simuplc-features-grid{grid-template-columns:1fr;gap:9px}#simuplcProFeaturesDialog .simuplc-feature-section{padding:12px}}
+</style>
 </head>
 <body>
 <div id="simuplcBootScreen" aria-label="Cargando SimuPLC">
@@ -3510,23 +3527,7 @@ body.mode-control #editorSelectBtn{display:none!important}
     </div>
     <div class="simuplc-android-pro-banner"><strong>📱 SimuPLC PRO para Android</strong><span>Funciones avanzadas · Compra segura mediante Google Play</span></div>
     <p class="simuplc-android-pro-summary">Ladder, FBD, HMI avanzado, temporizadores, exportación PDF y mucho más.</p>
-    <details class="simuplc-android-pro-details"><summary>✓ Ver todas las funciones PRO</summary>
-    <div class="pro-benefits" aria-label="Beneficios de SimuPLC PRO">
-      <ul class="pro-benefits-list">
-        <li>Entradas y salidas analógicas</li>
-        <li>Temporizadores configurables</li>
-        <li>Variadores de frecuencia (VFD)</li>
-        <li>Programación y simulación avanzada con <strong>Ladder y FBD</strong></li>
-        <li>Módulos de ampliación <strong>LOGO!</strong></li>
-        <li>Modo <strong>Técnico y Protecciones</strong></li>
-        <li><strong>Herramientas avanzadas de Control y Potencia:</strong> banco de condensadores, mejora del factor de potencia y transformadores de alta a baja tensión</li>
-        <li>Procesos <strong>HMI avanzados</strong> sin las limitaciones de FREE</li>
-        <li><strong>Guardar y exportación del proyecto completo</strong></li>
-        <li><strong>Exportar en PDF con cajetín editable y sin marca</strong></li>
-        <li><strong>Nuevas funciones y actualizaciones PRO incluidas</strong></li>
-      </ul>
-    </div>
-    </details>
+    <button id="simuplcFeaturesOpen" class="simuplc-features-open" type="button" aria-haspopup="dialog">✦ Ver todas las funciones PRO <span aria-hidden="true">›</span></button>
     <p class="simuplc-android-pro-intro">Elige tu plan PRO. Google Play mostrará el precio y las condiciones antes de confirmar.</p>
     <div class="simuplc-android-pro-license-notice"><strong>Importante:</strong> la licencia adquirida mediante Google Play es válida únicamente para Android. No incluye la versión para PC o laptop.</div>
     <div class="billing-actions">
@@ -17941,6 +17942,27 @@ body.mode-fbd #wires .wire-hit{
 })();
 </script>
 
+<script id="simuplc-play-pro-features-dialog-v2">
+document.addEventListener("DOMContentLoaded",function(){
+ const trigger=document.getElementById("simuplcFeaturesOpen");if(!trigger)return;
+ const dialog=document.createElement("dialog");dialog.id="simuplcProFeaturesDialog";dialog.setAttribute("aria-label","Todas las funciones SimuPLC PRO");
+ dialog.innerHTML='<button type="button" class="simuplc-features-close" aria-label="Cerrar funciones">✕ Cerrar</button><h3>Todo lo que incluye SimuPLC PRO</h3><p class="simuplc-features-subtitle">Herramientas para diseñar, programar, simular y documentar tus proyectos eléctricos y de automatización.</p>';
+ const sections=[
+ {title:"Programación PLC y Arduino",icon:"🧩",items:["Programación y simulación avanzada en Ladder y FBD","Módulos de ampliación LOGO!","Entradas y salidas analógicas","Temporizadores configurables","Programación de Arduino con funciones avanzadas PRO, como temporizadores"]},
+ {title:"Control y potencia",icon:"⚡",items:["Variadores de frecuencia (VFD)","Modo Técnico y Protecciones","Banco de condensadores y mejora del factor de potencia","Transformadores de alta a baja tensión"]},
+ {title:"HMI y proyectos",icon:"🖥️",items:["Procesos HMI avanzados sin las limitaciones de FREE","Guardar y exportar el proyecto completo","Exportar circuitos a PDF con cajetín editable y sin marca"]},
+ {title:"Actualizaciones",icon:"✨",items:["Nuevas funciones y actualizaciones PRO incluidas"]}
+ ];
+ const grid=document.createElement("div");grid.className="simuplc-features-grid";
+ sections.forEach(function(section){const card=document.createElement("section");card.className="simuplc-feature-section";const heading=document.createElement("h4");heading.textContent=section.icon+" "+section.title;card.appendChild(heading);const ul=document.createElement("ul");section.items.forEach(function(item){const li=document.createElement("li");li.textContent=item;ul.appendChild(li)});card.appendChild(ul);grid.appendChild(card)});
+ dialog.appendChild(grid);const footer=document.createElement("p");footer.className="simuplc-features-footer";footer.textContent="Las compras realizadas mediante Google Play son válidas únicamente para Android.";dialog.appendChild(footer);document.body.appendChild(dialog);
+ function closeDialog(){if(typeof dialog.close==="function"&&dialog.open)dialog.close();else dialog.removeAttribute("open");trigger.focus()}
+ trigger.addEventListener("click",function(){if(typeof dialog.showModal==="function")dialog.showModal();else dialog.setAttribute("open","")});
+ dialog.querySelector(".simuplc-features-close").addEventListener("click",closeDialog);
+ dialog.addEventListener("click",function(e){if(e.target===dialog)closeDialog()});
+ dialog.addEventListener("keydown",function(e){if(e.key==="Escape"&&typeof dialog.close!=="function"){e.preventDefault();closeDialog()}});
+});
+</script>
 </body></html>');
   doc.close();
 
