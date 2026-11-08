@@ -17083,19 +17083,7 @@ body.ladder-pro-only.library-collapsed .ladder-library-open-floating{
         const det=await withFreshBillingService(function(service){
           return service.getDetails(PRODUCT_IDS);
         },'diagnostics-getDetails');
-        details=(Array.isArray(det)?det:[]).map(function(d){
-          const keys=Object.keys(d||{});
-          const safeOfferFields={};
-          ['offerId','purchaseOptionId','offerToken','offers','offerDetails','oneTimePurchaseOfferDetails','oneTimePurchaseOfferDetailsList'].forEach(function(key){
-            if(!Object.prototype.hasOwnProperty.call(d,key))return;
-            const val=d[key];
-            if(key==='offerToken')safeOfferFields[key]='present (redacted)';
-            else if(Array.isArray(val))safeOfferFields[key]=val.map(function(o){return {keys:Object.keys(o||{}),offerId:o&&o.offerId||null,price:o&&o.price||null,offerTokenPresent:!!(o&&o.offerToken)};});
-            else if(val&&typeof val==='object')safeOfferFields[key]={keys:Object.keys(val)};
-            else safeOfferFields[key]=val;
-          });
-          return {itemId:itemIdOf(d),type:d.type||'',price:formatPrice(d),subscriptionPeriod:d.subscriptionPeriod||'',returnedFieldNames:keys,offerMetadata:safeOfferFields};
-        });
+        details=(Array.isArray(det)?det:[]).map(d=>({itemId:itemIdOf(d),type:d.type||'',price:formatPrice(d),subscriptionPeriod:d.subscriptionPeriod||''}));
       }
     }catch(e){error=String(e&&e.message||e);}
     const store=readEntitlementStore();
