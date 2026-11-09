@@ -18033,6 +18033,42 @@ document.addEventListener("DOMContentLoaded",function(){
  dialog.addEventListener("keydown",function(e){if(e.key==="Escape"&&typeof dialog.close!=="function"){e.preventDefault();closeDialog()}});
 });
 </script>
+<!-- SIMUPLC PRO CTA / HMI layout 2026-11-09 -->
+<style id="simuplc-pro-cta-unified-v2">
+#btnSoporte{background:linear-gradient(135deg,#f7d77c,#e4a72d)!important;color:#182339!important;border:1px solid #fce6a5!important;font-weight:900!important;box-shadow:0 7px 22px rgba(109,72,8,.35)!important;white-space:nowrap!important}
+#btnSoporte::before{content:'👑 ';white-space:pre}
+body.mode-hmi #hmiProUnlockBtn{display:flex!important}
+#hmiProUnlockBtn{display:none;position:absolute;left:50%;bottom:calc(10px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:530;align-items:center;justify-content:center;min-height:46px;padding:0 14px;border:1px solid #fce6a5;border-radius:999px;background:linear-gradient(135deg,#f7d77c,#e4a72d);color:#182339;font:900 13px Arial,sans-serif;box-shadow:0 7px 22px rgba(109,72,8,.35);white-space:nowrap;cursor:pointer}
+#hmiProUnlockBtn::before{content:'👑 ';white-space:pre}
+body.full-mode #hmiProUnlockBtn{display:none!important}
+#hmiHost .hmi-zoom-controls{left:auto!important;right:12px!important;transform:none!important}
+#hmiHost.hmi-has-selection .hmi-zoom-controls{display:none!important;pointer-events:none!important}
+#hmiHost .hmi-float-settings-btn{right:12px!important;bottom:calc(68px + env(safe-area-inset-bottom,0px))!important}
+@media(max-width:560px){#hmiHost .hmi-zoom-controls button[data-hmi-zoom="fit"]{display:inline-flex!important}#hmiProUnlockBtn{font-size:12px;padding:0 10px}}
+</style>
+<script id="simuplc-hmi-pro-cta-v2">
+(function(){
+function init(){
+ var shell=document.querySelector('#hmiHost .hmi-app-shell');
+ if(!shell||document.getElementById('hmiProUnlockBtn'))return;
+ var btn=document.createElement('button');
+ btn.id='hmiProUnlockBtn';btn.type='button';btn.textContent='Desbloquear PRO';
+ btn.addEventListener('click',function(ev){
+   ev.preventDefault();ev.stopPropagation();
+   var original=document.getElementById('btnSoporte');
+   if(original)original.click();
+ });
+ shell.appendChild(btn);
+ function sync(){
+  var full=false;
+  try{full=localStorage.getItem('logicsoft_full_v1')==='1'||document.body.classList.contains('full-mode')}catch(_){full=document.body.classList.contains('full-mode')}
+  btn.style.setProperty('display',full?'none':'','important');
+ }
+ sync();window.addEventListener('simuplc-license-changed',sync);
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
+})();
+</script>
 </body></html>');
   doc.close();
 
@@ -19937,9 +19973,8 @@ body.mode-hmi #hmiHost{top:0!important}
   }
   function hmiProjectLocked(){return !hmiIsPro()&&!hmiValidateFreeProject(project).ok;}
   function hmiShowUpgrade(message){
-    const msg=(message||'Esta función requiere SimuPLC Pro.')+'\n\nLa versión Free conserva tu proyecto y permite arranque directo, inversión de giro, estrella-triángulo y procesos con hasta 2 tanques.';
-    alert(msg);
-    try{if(typeof window.simuplcOpenPremiumOverlay==='function')window.simuplcOpenPremiumOverlay();else document.body.classList.add('show-premium');}catch(_){}
+    // Los elementos bloqueados permanecen inactivos sin mostrar avisos ni abrir compras.
+    return;
   }
   function refreshHmiPlanUi(){
     const pro=hmiIsPro(),locked=hmiProjectLocked();
