@@ -4145,7 +4145,7 @@ body.mode-control #editorSelectBtn{display:none!important}
 </div>
 </div>
 </div>
-<button id="btnSoporte" class="btn-soporte">ACTIVA FUNCIONES</button>
+<button id="btnSoporte" class="btn-soporte">Desbloquear PRO</button>
 <div id="brand">SimuPLC Lab</div>
 <button id="installBtn">Instalar SimuPLC Lab</button>
 <button id="fabPalette">🧩 Bloques</button>
@@ -12424,7 +12424,7 @@ body.full-mode #btnSoporte{ display:none !important; }
       var full=false;
       try{ full=localStorage.getItem('logicsoft_full_v1')==='1' || document.body.classList.contains('full-mode'); }catch(e){}
       btn.style.display = full ? 'none' : '';
-      if(!full) btn.textContent='ACTIVAR FUNCIONES';
+      if(!full) btn.textContent='Desbloquear PRO';
     }catch(e){}
   }
   window.syncProfesionalButton=syncProfesionalButton;
@@ -12692,7 +12692,7 @@ body.full-mode #btnSoporte{ display:none !important; }
       btn.classList.add('premium-active');
     }else{
       btn.style.display = '';
-      btn.textContent = 'ACTIVA FUNCIONES';
+      btn.textContent = 'Desbloquear PRO';
       btn.classList.remove('premium-active');
     }
   }
@@ -12769,7 +12769,7 @@ body.full-mode #btnSoporte{ display:none !important; }
         btn.classList.add('premium-active');
       }else{
         btn.style.display = '';
-        btn.textContent = 'ACTIVA FUNCIONES';
+        btn.textContent = 'Desbloquear PRO';
         btn.classList.remove('premium-active');
       }
     }
@@ -19297,7 +19297,7 @@ body.mode-ladder:not(.modular-external-editor) #topbar{display:flex!important}
           btn.classList.add('premium-active');
         }else{
           btn.style.display = '';
-          btn.textContent = 'ACTIVA FUNCIONES';
+          btn.textContent = 'Desbloquear PRO';
           btn.classList.remove('premium-active');
         }
       }
