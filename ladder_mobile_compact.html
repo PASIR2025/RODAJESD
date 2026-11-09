@@ -10077,6 +10077,9 @@ body.simuplc-ladder-pdf #simuplcLadderPdfBrand{display:block!important;position:
     -webkit-tap-highlight-color:transparent;
   }
   body.full-mode #ladderPremiumBtn{ display:none !important; }
+  /* CTA compartida del editor principal: ocultar botón heredado duplicado. */
+  #ladderPremiumBtn{display:none!important;pointer-events:none!important;}
+
   body.full-mode .ladder-lib-item[data-premium="1"]::after{ content:"" !important; display:none !important; }
   body.full-mode .ladder-lib-item[data-premium="1"]{
     opacity:1 !important;
