@@ -10712,6 +10712,46 @@ function attachNumberEditor(node){
   }
 
   function openArduinoModal(){
+    // Aviso de seguridad una vez por dispositivo y versión de condiciones.
+    const safetyKey = 'simuplc_electrical_safety_accepted_v1';
+    let safetyAccepted = false;
+    try { safetyAccepted = localStorage.getItem(safetyKey) === 'accepted'; } catch (_) {}
+    if (!safetyAccepted) {
+      if (document.getElementById('simuplcSafetyOverlay')) return;
+      const overlay = document.createElement('div');
+      overlay.id = 'simuplcSafetyOverlay';
+      overlay.setAttribute('role', 'presentation');
+      overlay.style.cssText = 'position:fixed;inset:0;z-index:2147483646;background:rgba(15,23,42,.76);display:flex;align-items:center;justify-content:center;padding:18px';
+      const card = document.createElement('section');
+      card.setAttribute('role', 'dialog');
+      card.setAttribute('aria-modal', 'true');
+      card.setAttribute('aria-labelledby', 'simuplcSafetyTitle');
+      card.style.cssText = 'box-sizing:border-box;width:min(440px,100%);max-height:90vh;overflow:auto;background:#fff;color:#17233a;border-radius:16px;padding:22px;font:15px/1.5 system-ui,sans-serif;box-shadow:0 18px 60px #0005';
+      card.innerHTML = '<h2 id="simuplcSafetyTitle" style="margin:0 0 12px;font-size:20px;color:#a52b19">⚠️ Advertencia de seguridad eléctrica</h2>' +
+        '<p>El control de dispositivos físicos requiere conocimientos técnicos en electricidad y el cumplimiento de las medidas de seguridad correspondientes.</p>' +
+        '<p><strong>El usuario es responsable de realizar conexiones seguras. SimuPLC no asume responsabilidad por daños o perjuicios derivados del uso indebido de la aplicación, conexiones incorrectas o incumplimiento de las medidas de seguridad, dentro de los límites permitidos por la ley.</strong></p>' +
+        '<p style="font-size:13px">SimuPLC y Arduino son herramientas educativas; no sustituyen protecciones eléctricas ni sistemas de seguridad industrial.</p>' +
+        '<label style="display:flex;gap:10px;align-items:flex-start;margin:16px 0"><input id="simuplcSafetyCheck" type="checkbox" style="margin-top:5px;flex-shrink:0"> He leído y comprendido la advertencia de seguridad.</label>' +
+        '<div style="display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap"><button type="button" id="simuplcSafetyCancel" style="padding:10px 14px;border:1px solid #cbd5e1;border-radius:9px;background:white;color:#17233a">Cancelar</button><button type="button" id="simuplcSafetyContinue" disabled style="padding:10px 14px;border:0;border-radius:9px;background:#1768ba;color:white;opacity:.5">Aceptar y continuar</button></div>';
+      overlay.appendChild(card);
+      document.body.appendChild(overlay);
+      const check = card.querySelector('#simuplcSafetyCheck');
+      const next = card.querySelector('#simuplcSafetyContinue');
+      const cancel = card.querySelector('#simuplcSafetyCancel');
+      const close = () => { overlay.remove(); };
+      check.addEventListener('change', () => { next.disabled = !check.checked; next.style.opacity = check.checked ? '1' : '.5'; });
+      cancel.addEventListener('click', close);
+      next.addEventListener('click', () => {
+        if (!check.checked) return;
+        try { localStorage.setItem(safetyKey, 'accepted'); } catch (_) {}
+        close();
+        // Abrir el entorno habitual sin alterar compilación, pines ni programación.
+        window.openArduinoModal();
+      });
+      cancel.focus();
+      return;
+    }
+
     ensureArduinoModal();
     renderArduinoPinsUI();
     try{ if(window.renderArduinoOutputConfigUI) window.renderArduinoOutputConfigUI(); }catch(_){ }
