@@ -23758,6 +23758,25 @@ async function restore(file){if(busy||!file)return;busy=true;try{if(file.size>50
 function init(){const list=document.getElementById('circuitsList');if(!list)return;const panel=document.createElement('section');panel.style.cssText='padding:10px 0;display:grid;gap:7px;border-top:1px solid #94a3b8;';const heading=document.createElement('strong');heading.textContent='Copia de seguridad de proyectos';panel.appendChild(heading);const controls=document.createElement('div');controls.style.cssText='display:flex;gap:6px;flex-wrap:wrap';panel.appendChild(controls);function button(label,fn){const b=document.createElement('button');b.type='button';b.textContent=label;b.style.cssText='padding:8px 10px;border:1px solid #64748b;border-radius:8px;background:#174c91;color:white;cursor:pointer;font:inherit';b.addEventListener('click',fn);controls.appendChild(b);}button('Guardar respaldo',()=>save(false));button('Descargar copia',()=>save(true));const input=document.createElement('input');input.type='file';input.accept='.json,application/json';input.hidden=true;input.addEventListener('change',()=>{const f=input.files[0];input.value='';restore(f);});panel.appendChild(input);button('Restaurar proyectos',()=>input.click());status=document.createElement('small');status.setAttribute('role','status');panel.appendChild(status);setStatus(lastDate()?'Último respaldo actualizado: '+new Date(lastDate()).toLocaleString():'Crea un respaldo externo antes de borrar los datos de Chrome.');list.parentNode.insertBefore(panel,list);setting(false).then(v=>{if(v&&v.handle){handle=v.handle;baseline=v.baseline;auto=true;}}).catch(()=>{});}
 async function tick(){if(!auto||!handle||busy||document.hidden)return;busy=true;try{const d=snapshot();if(!count(d)||JSON.stringify(d)===baseline)return;if(await handle.queryPermission({mode:'readwrite'})!=='granted'){setStatus('Hay cambios sin respaldo. Pulsa Guardar respaldo para autorizarlo.');return;}const previous=baseline?JSON.parse(baseline):{};if(keys.some(k=>(previous[k]||[]).length>(d[k]||[]).length)){auto=false;setStatus('La lista de proyectos se redujo. Pulsa Guardar respaldo si deseas actualizar la copia.');return;}await writeFile(handle,d);}catch(e){auto=false;setStatus('Respaldo automático detenido. Pulsa Guardar respaldo.');}finally{busy=false;}}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();setInterval(tick,5000);
+const noticeKey='simuplc_backup_notice_v1';
+let noticeShown=false, observed=null;
+function showBackupNotice(){
+ if(noticeShown)return;
+ noticeShown=true;
+ const overlay=document.createElement('div');overlay.style.cssText='position:fixed;inset:0;z-index:2147483647;background:rgba(15,23,42,.65);display:grid;place-items:center;padding:16px';
+ const card=document.createElement('div');card.setAttribute('role','dialog');card.setAttribute('aria-modal','true');card.setAttribute('aria-label','Protege tus proyectos');card.style.cssText='box-sizing:border-box;width:min(420px,100%);background:white;color:#0f172a;padding:22px;border-radius:16px;box-shadow:0 12px 45px #0005;font:15px/1.5 Arial,sans-serif';
+ const title=document.createElement('h2');title.textContent='⚠ Protege tus proyectos';title.style.cssText='font-size:21px;margin:0 0 10px';card.appendChild(title);
+ const p=document.createElement('p');p.textContent='Tus proyectos se guardan en el dispositivo. Si borras los datos de Chrome o del navegador, podrías perderlos. Guarda una copia de seguridad externa y actualízala cuando realices cambios.';card.appendChild(p);
+ const actions=document.createElement('div');actions.style.cssText='display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end';card.appendChild(actions);
+ function close(){try{localStorage.setItem(noticeKey,'1');}catch(_){}overlay.remove();}
+ function btn(label,primary,fn){const b=document.createElement('button');b.type='button';b.textContent=label;b.style.cssText='padding:10px 14px;border-radius:9px;border:1px solid #2563eb;font:600 14px Arial;cursor:pointer;background:'+(primary?'#2563eb':'white')+';color:'+(primary?'white':'#174c91');b.onclick=fn;actions.appendChild(b);return b;}
+ btn('Más tarde',false,close);const create=btn('Crear respaldo',true,()=>{close();try{window.openCircuitsModal&&window.openCircuitsModal();}catch(_){}save(false);});
+ overlay.appendChild(card);document.body.appendChild(overlay);create.focus();
+}
+function checkNotice(){try{const d=snapshot(), serialized=JSON.stringify(d);if(!count(d)){observed=serialized;return;}if(!localStorage.getItem(noticeKey)&&!lastDate()&&!noticeShown&&(observed===null||observed!==serialized)){if(document.hidden)return;showBackupNotice();}observed=serialized;}catch(_){}}
+function startNotice(){setTimeout(checkNotice,1800);setInterval(checkNotice,1800);}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',startNotice,{once:true});else startNotice();
+
 })();
 </script>
 </body>
